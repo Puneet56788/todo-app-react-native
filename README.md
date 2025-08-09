@@ -4,8 +4,8 @@ A cross-platform mobile app built using React Native and Expo for managing daily
 
 ## 🚀 Features
 
-- Add and delete tasks
-- Mark tasks as completed
+- Add, delete, and mark tasks as completed
+- Dark/Light mode toggle using Context API
 - Local storage using AsyncStorage
 - Clean and responsive UI
 

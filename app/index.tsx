@@ -1,10 +1,10 @@
+import { useTheme } from "@/contexts/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Checkbox from "expo-checkbox";
 import { useEffect, useState } from "react";
 import {
   FlatList,
-  Image,
   Keyboard,
   KeyboardAvoidingView,
   StyleSheet,
@@ -22,38 +22,41 @@ type todoType = {
 };
 
 export default function Index() {
-  const todo = [
-    {
-      id: 1,
-      title: "Todo 1",
-      isDone: false,
-    },
-    {
-      id: 2,
-      title: "Todo 2",
-      isDone: false,
-    },
-    {
-      id: 3,
-      title: "Todo 3",
-      isDone: true,
-    },
-    {
-      id: 4,
-      title: "Todo 4",
-      isDone: false,
-    },
-    {
-      id: 5,
-      title: "Todo 5",
-      isDone: false,
-    },
-  ];
+  // const todo = [
+  //   {
+  //     id: 1,
+  //     title: "Todo 1",
+  //     isDone: false,
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Todo 2",
+  //     isDone: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Todo 3",
+  //     isDone: true,
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Todo 4",
+  //     isDone: false,
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Todo 5",
+  //     isDone: false,
+  //   },
+  // ];
 
   const [todos, setTodos] = useState<todoType[]>([]);
   const [oldTodos, setOldTodos] = useState<todoType[]>([]);
   const [todoText, setTodoText] = useState("");
   const [searchText, setSearchText] = useState("");
+  const { theme, toggleTheme } = useTheme();
+
+  const isDark = theme === "dark";
 
   useEffect(() => {
     const getTodos = async () => {
@@ -71,6 +74,10 @@ export default function Index() {
   }, []);
 
   const addTodo = async () => {
+
+    if(todoText === ''){
+      return;
+    }
     try {
       const newTodo = {
         id: Math.random(),
@@ -132,7 +139,9 @@ export default function Index() {
 
   // const [isChecked , setIsChecked] = useState(false)
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: isDark ? "#eee" : "#000" }]}
+    >
       {/* <Text>Edit app/index.tsx to edit this screen.</Text> */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -140,29 +149,49 @@ export default function Index() {
             // alert("jj");
           }}
         >
-          <Ionicons name="menu" size={24} color={"black"} />
+          <Ionicons name="menu" size={24} color={isDark ? "#000" : "#eee"} />
         </TouchableOpacity>
-        <Image
+
+        <TouchableOpacity onPress={toggleTheme}>
+          <Ionicons
+            name="contrast-outline"
+            size={24}
+            color={isDark ? "#000" : "#eee"}
+          />
+        </TouchableOpacity>
+
+        {/* <Image
           source={{ uri: "https://xsgames.co/randomusers/avatar.php?g=male" }}
           style={{ width: 40, height: 40, borderRadius: 20 }}
-        />
+        /> */}
       </View>
 
-      <View style={styles.searchBar}>
-        <Ionicons name="search" size={24} color={"black"} />
+      <View
+        style={[
+          styles.searchBar,
+          { backgroundColor: isDark ? "#fff" : "#333" },
+        ]}
+      >
+        <Ionicons name="search" size={24} color={isDark ? "#000" : "#fff"} />
         <TextInput
           placeholder="Search"
           value={searchText}
           onChangeText={(text) => setSearchText(text)}
-          style={styles.input}
+          style={[styles.input, { color: isDark ? "#000" : "#fff" }]}
           clearButtonMode="always"
+          placeholderTextColor={isDark ? "#000" : "#fff"}
         />
       </View>
       <FlatList
         data={[...todos].reverse()}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.todoContainer}>
+          <View
+            style={[
+              styles.todoContainer,
+              { backgroundColor: isDark ? "#fff" : "#333" },
+            ]}
+          >
             <View style={styles.todoInfoContainer}>
               <Checkbox
                 value={item.isDone}
@@ -173,6 +202,7 @@ export default function Index() {
                 style={[
                   styles.todoText,
                   item.isDone && { textDecorationLine: "line-through" },
+                  { color: isDark ? "#000" : "#fff" },
                 ]}
               >
                 {item.title}
@@ -197,9 +227,16 @@ export default function Index() {
       >
         <TextInput
           placeholder="Add New Todo"
-          style={styles.newTodoInput}
+          style={[
+            styles.newTodoInput,
+            {
+              backgroundColor: isDark ? "#fff" : "#333",
+              color: isDark ? "#000" : "#fff",
+            },
+          ]}
           onChangeText={(text) => setTodoText(text)}
           value={todoText}
+          placeholderTextColor={isDark ? "#000" : "#fff"}
         />
         <TouchableOpacity
           onPress={() => addTodo()}
@@ -216,9 +253,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    backgroundColor: "#eee",
-    // justifyContent: "center",
-    // alignItems: "center",
   },
   header: {
     marginBottom: 20,
@@ -227,7 +261,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   searchBar: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
@@ -239,11 +273,12 @@ const styles = StyleSheet.create({
     // backgroundColor:'#000',
     flex: 1,
     fontSize: 16,
-    color: "#000",
+    // color: "#000",
   },
   todoContainer: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     marginBottom: 20,
+    paddingHorizontal:10,
 
     flexDirection: "row",
     padding: 4,
@@ -265,9 +300,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   newTodoInput: {
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
     flex: 1,
-    // padding:12,
+    paddingHorizontal:10,
     borderRadius: 10,
     color: "#000",
     fontSize: 16,
